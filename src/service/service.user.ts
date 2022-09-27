@@ -24,6 +24,14 @@ class UserService{
             }
         }
     }
+    async delData(ctx:any) {
+        const sendTime = new Date(ctx.request.body.data)
+        await dao.delData(sendTime)
+        ctx.body = {
+            code: 200,
+            value: "删除成功"
+        }
+    }
 
 }
 

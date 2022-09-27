@@ -13,7 +13,8 @@ const Router = require('koa-router');
 
 const {
     getDatas,
-    addUser
+    addUser,
+    delData
 } = require('../service/service.user');
 
 // 前缀：
@@ -24,6 +25,7 @@ const deportmentRouter = new Router({
 
 deportmentRouter.get('/getDatas', getDatas);
 deportmentRouter.post('/addUser', addUser);
+deportmentRouter.post("/delData",delData);
 
 
 // 导出

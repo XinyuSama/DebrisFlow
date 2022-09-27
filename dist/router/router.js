@@ -10,18 +10,14 @@ const Router = require('koa-router');
 //请求进来后 先通过中间件处理，比如鉴别权限等等
 // 中间件
 // 具体的处理逻辑 增删改查
-const { getMessage } = require('../controller/controller');
+const { getDatas, addUser } = require('../service/service.user');
 // 前缀：
 const deportmentRouter = new Router({
     //baseurl
     prefix: '/api'
 });
-deportmentRouter.get('/getMessage', getMessage);
-//路由和处理的对应的方法绑定
-// deportmentRouter.post('/', create);
-// deportmentRouter.get('/', getMenubar);
-// deportmentRouter.patch('/:departmentId', update);
-// deportmentRouter.delete('/:departmentId', remove);
+deportmentRouter.get('/getDatas', getDatas);
+deportmentRouter.post('/addUser', addUser);
 // 导出
 module.exports = deportmentRouter;
-//# sourceMappingURL=dao.user.ts.map
+//# sourceMappingURL=router.js.map
