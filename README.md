@@ -52,6 +52,7 @@
 * change mysql 的 sendTime字段数据类别为 timestamp
 * add mysql字段redisId 与 redis 关联 redis-> ioredis
 * change nodeVersion => 16.14.0 解决无法import引入部分模块 提高兼容性
+* linux环境下需要手动降级TypeScript到4.6.2 (using ts-node ver. 9.1.1, typescript ver. 4.6.2)
 * 增加接口
   * get
     * ip/api/getAllData -> 获取所有数据 ✅
