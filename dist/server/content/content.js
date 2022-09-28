@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const ConnectionContent = require('../../../configs/database');
+const ConnectionContent = require('../../../configs/mysql-config');
 class ServiceContent {
 }
 module.exports = new ServiceContent();

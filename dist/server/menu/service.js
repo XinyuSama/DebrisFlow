@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const ConnectionMenu = require('../../../configs/database');
+const ConnectionMenu = require('../../../configs/mysql-config');
 class Service {
     async f_getMenubar() {
         const tag1 = 'select a.id,a.tag1Name,a.IconUrl from tag a ';
@@ -54,4 +54,4 @@ class Service {
     }
 }
 module.exports = new Service();
-//# sourceMappingURL=dao.user.ts.map
+//# sourceMappingURL=dao.datas.ts.map

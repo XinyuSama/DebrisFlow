@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const ConnectionTag3 = require('../../../configs/database');
+const ConnectionTag3 = require('../../../configs/mysql-config');
 class ServiceTag3 {
     /**
      * @param:tag2_id,tag3Name

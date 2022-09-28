@@ -12,10 +12,16 @@ const Router = require('koa-router');
 // 具体的处理逻辑 增删改查
 
 const {
-    getDatas,
-    addUser,
-    delData
-} = require('../service/service.user');
+    delData,
+    getAllData,
+    getDataByTime,
+    addData,
+    getDataById,
+    getDataByWaterLevel,
+    getDataByTiltAngle,
+    getDataByPolice,
+    delDataById
+} = require('../service/service.datas');
 
 // 前缀：
 const deportmentRouter = new Router({
@@ -23,9 +29,14 @@ const deportmentRouter = new Router({
     prefix: '/api'
 });
 
-deportmentRouter.get('/getDatas', getDatas);
-deportmentRouter.post('/addUser', addUser);
-deportmentRouter.post("/delData",delData);
+deportmentRouter.get('/getAllData', getAllData);
+deportmentRouter.post('/getDataByTime', getDataByTime);
+deportmentRouter.post('/getDataById', getDataById);
+deportmentRouter.post('/getDataByWaterLevel', getDataByWaterLevel);
+deportmentRouter.post('/getDataByTiltAngle', getDataByTiltAngle);
+deportmentRouter.post('/getDataByPolice', getDataByPolice);
+deportmentRouter.post('/addData', addData);
+deportmentRouter.post("/delDataById",delDataById);
 
 
 // 导出

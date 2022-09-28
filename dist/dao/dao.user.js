@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const UserConnection = require('../../configs/database');
+const UserConnection = require('../../configs/mysql-config');
 class daoUser {
     async getDatas() {
         const sql = 'select * from datas';

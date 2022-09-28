@@ -19,4 +19,8 @@ module.exports = {
     MYSQL_DATABASE,
     MYSQL_USER,
     MYSQL_PASSWORD,
+    REDIS_HOST,
+    REDIS_PORT,
+    REDIS_PASSWORD,
+    REDIS_DB,
 } = process.env;

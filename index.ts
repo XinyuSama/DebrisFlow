@@ -15,6 +15,8 @@ const app = module.exports = new Koa()
 app.use(bodyParser())
 const path = require("path")
 const { koaSwagger } = require('koa2-swagger-ui');
+const config = require("./configs/config.js")
+
 
 
 const statics = require("koa-static")
@@ -35,8 +37,8 @@ app.use(
 app.use(useRoutes.routes())
 console.log("服务开启");
 if(!module.parent){
-    app.listen(3000,function(){
-        console.log("koa dao running at port 3000");
+    app.listen(config.APP_PORT,function(){
+        console.log(`koa dao running at port ${config.APP_PORT}`);
     })
 }
 module.exports = app;

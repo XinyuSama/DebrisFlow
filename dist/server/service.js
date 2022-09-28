@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const Connection = require('../../configs/database');
+const Connection = require('../../configs/mysql-config');
 class service {
     async getMessage() {
         const sql = 'select * from leave_message';
@@ -16,4 +16,4 @@ class service {
     }
 }
 module.exports = new service();
-//# sourceMappingURL=dao.user.ts.map
+//# sourceMappingURL=dao.datas.ts.map

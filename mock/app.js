@@ -12,6 +12,8 @@ const dotenv = require("dotenv")
 const mysql = require("mysql2")
 const Mock = require("mockjs")
 const app = new Koa();
+const times = require("./utils/times")
+
 
 //读取环境变量
 dotenv.config()
@@ -37,8 +39,13 @@ let addMessage = async ()=>{
     })
     console.log(MockObj)
     if(MockObj.waterLevel && MockObj.TiltAngle){
-        let querySql="INSERT INTO datas (waterLevel,TiltAngle,police) VALUES(?,?,?)"
-        let querySqlParameter = [`${MockObj.waterLevel}`,`${MockObj.TiltAngle}`,`${MockObj.police}`]
+        //fix linux系统时差 -> 东八区时间戳
+        let nowTimeTamp = times().utcOffset(8).valueOf()
+
+        // console.log(times(nowTimeTamp).format('YYYY-MM-DD HH:mm:ss'));
+        // console.log(nowTimeTamp)
+        let querySql="INSERT INTO datas (waterLevel,TiltAngle,police,sendTime) VALUES(?,?,?,?)"
+        let querySqlParameter = [`${MockObj.waterLevel}`,`${MockObj.TiltAngle}`,`${MockObj.police}`,`${nowTimeTamp}`]
         let searchSql = (querySql) => {
             return new Promise((resolve, reject) => {
                 connection.query(querySql,querySqlParameter, (err, result)=>{
@@ -55,7 +62,8 @@ let addMessage = async ()=>{
     }
 }
 
-setInterval(addMessage,60000)
+// setInterval(addMessage,60000)
+setInterval(addMessage,1000)
 
 
 

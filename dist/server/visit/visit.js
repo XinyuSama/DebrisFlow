@@ -5,7 +5,7 @@
  * author: 123
  * version: 1.0
  */
-const ConnectionVisit = require('../../../configs/database');
+const ConnectionVisit = require('../../../configs/mysql-config');
 class DeportmentServiceVisit {
     /**
      * @param:tagName,IconUrl
