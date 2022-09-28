@@ -18,13 +18,13 @@
 > 
 > mysql字段：
 > 
-> ![img.png](img.png)
+> ![img.png](./img.png)
 >
 > redis port -> 6379 db:1
 >
 > redis key 为随机生成的唯一id
 > 
-> ![img_1.png](img_1.png)
+> ![img_1.png](./img_1.png)
 > 
 > ip -> 43.138.68.251
 > 
@@ -54,10 +54,23 @@
   * get
     * ip/api/getAllData -> 获取所有数据 ✅
   * post
-    * ip/api/getDataByTime -> 根据时间段获取数据 parameter-->startTime:string||number,endTime:string||number;return-->时间段数据 ps:时间格式->时间戳 ✅
-    * ip/api/getDataById -> 根据Id获取数据 parameter-->Id:number;return-->单条数据 ✅
-    * ip/api/getDataByWaterLevel -> 根据waterLevel获取数据 parameter-->StartWaterLevel:string||number,EndWaterLevel:string||number;return-->满足waterLever范围的数据 ✅
-    * ip/api/getDataByTiltAngle -> 根据TiltAngle获取数据 parameter-->StartTiltAngle:string||number,EndTiltAngle:string||number;return-->满足TiltAngle范围的数据 ✅
-    * ip/api/getDataByPolice -> 根据Police获取数据 parameter-->police:true||false;return-->满足police的数据 ✅
-    * ip/api/addData -> 存入数据 parameter-->waterLevel:string TiltAngle:string police:string ✅
-    * ip/api/delDataById -> 根据Id删除数据 parameter-->Id:number ✅
+    * ip/api/getDataByTime -> 根据时间段获取数据  ✅
+      * parameter-->startTime:string||number,endTime:string||number;
+      * return-->时间段数据 
+      * ps:时间格式->时间戳
+    * ip/api/getDataById -> 根据Id获取数据  ✅
+      * parameter-->Id:number;
+      * return-->单条数据
+    * ip/api/getDataByWaterLevel -> 根据waterLevel获取数据  ✅
+      * parameter-->StartWaterLevel:string||number,EndWaterLevel:string||number;
+      * return-->满足waterLever范围的数据
+    * ip/api/getDataByTiltAngle -> 根据TiltAngle获取数据  ✅
+      * parameter-->StartTiltAngle:string||number,EndTiltAngle:string||number;
+      * return-->满足TiltAngle范围的数据
+    * ip/api/getDataByPolice -> 根据Police获取数据  ✅
+      * parameter-->police:true||false;
+      * return-->满足police的数据
+    * ip/api/addData -> 存入数据 ✅
+      * parameter-->waterLevel:string TiltAngle:string police:string 
+    * ip/api/delDataById -> 根据Id删除数据 ✅
+      * parameter-->Id:number 
