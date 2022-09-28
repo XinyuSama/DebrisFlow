@@ -12,22 +12,24 @@
 
 > 目录->/mock
 >
+> App ip -> 43.138.68.251
+>
+> App prot ->3000
+>
 > Mock prot -> 4399 
 >
 > mysql port -> 33066
-> 
+>
 > mysql字段：
-> 
+>
 > ![img.png](./img.png)
 >
 > redis port -> 6379 db:1
 >
 > redis key 为随机生成的唯一id
-> 
+>
 > ![img_1.png](./img_1.png)
-> 
-> ip -> 43.138.68.251
-> 
+>
 
 ## 2022-9-27-15:40
 
