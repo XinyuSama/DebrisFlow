@@ -32,6 +32,20 @@ class DatasService{
                 }
             }
     }
+    async getAllDataByRedis(ctx:any){
+        try {
+            const res = await DatasDao_.getAllDataByRedis()
+            ctx.body = {
+                code: 1,
+                data: res
+            }
+        } catch (e) {
+            ctx.body = {
+                code: 0,
+                data: "参数错误"+e
+            }
+        }
+    }
     async getDataByTime(ctx:any){
         try {
             let {startTime,endTime} = ctx.request.body

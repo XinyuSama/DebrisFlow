@@ -77,3 +77,71 @@
       * parameter-->waterLevel:string TiltAngle:string police:string 
     * ip/api/delDataById -> 根据Id删除数据 ✅
       * parameter-->Id:number 
+
+## 2022-10-07-22:05
+1. 更改redis存储类型,设置每条数据存储时间为60s * 60 ,一小时,mysql永久存储全部数据，使用异步+redis处理有大量请求时候，先存入redis中再通过异步反复存入mysql直到成功
+   * 更改接口`addData`  
+     
+     原代码:
+     ``` js
+     async addData(waterLevel:string,TiltAngle:string,police:string) {
+        try {
+            let nowTimeTamp = times().utcOffset(8).valueOf()
+            let redisID = uuid.v1().toString()
+            await RedisConnection.sadd(redisID,[nowTimeTamp,waterLevel,TiltAngle,police])
+            const sql = 'INSERT INTO datas (sendTime,waterLevel,TiltAngle,police,redisId) VALUES (?,?,?,?,?)'
+            const [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
+            return res
+        }catch (e){
+            console.log(e)
+        }
+      }
+     ```
+     更改后的代码:
+     ```js
+         async addData(waterLevel:string,TiltAngle:string,police:string) {
+        try {
+            let nowTimeTamp = times().utcOffset(8).valueOf()
+            let redisID = uuid.v1().toString()
+            // redis存储 设置数据存储时长60s
+            let redisValue = {
+                sendTime:nowTimeTamp,
+                waterLevel:waterLevel,
+                TiltAngle:TiltAngle,
+                police:police
+            }
+            // 对象转字符串:
+            await RedisConnection.set(redisID, JSON.stringify(redisValue), (err:any) => {
+                // 为key 设定一个时长 单位为S
+                RedisConnection.expire(redisID, 60*60)
+                if (err) return err
+            })
+            const sql = 'INSERT INTO datas (sendTime,waterLevel,TiltAngle,police,redisId) VALUES (?,?,?,?,?)'
+            //异步队列
+            let addToMysql = async (sql:string)=>{
+              let [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
+              return res
+            }
+            //如果存入mysql失败 再次尝试
+            try{
+                let res =  await addToMysql(sql)
+                if (res.affectedRows!=1){
+                    addToMysql(sql)
+                    console.log(res)
+                }else {
+                    return res
+                }
+            }catch (e) {
+                return "mysql异常"+e
+            }
+
+
+        }catch (e){
+            return e
+        }
+   }
+
+     ```
+2. 增加接口 
+* get
+  * ip/api/getAllDataByRedis -> 获取所有redis里的数据（redis里数据只存在1小时，获取全部->getAllData） ✅
