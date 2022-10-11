@@ -18,12 +18,41 @@ class DatasDao {
         try {
             let nowTimeTamp = times().utcOffset(8).valueOf()
             let redisID = uuid.v1().toString()
-            await RedisConnection.sadd(redisID,[nowTimeTamp,waterLevel,TiltAngle,police])
+            // redis存储 设置数据存储时长60s
+            let redisValue = {
+                sendTime:nowTimeTamp,
+                waterLevel:waterLevel,
+                TiltAngle:TiltAngle,
+                police:police
+            }
+            // 对象转字符串:
+            await RedisConnection.set(redisID, JSON.stringify(redisValue), (err:any) => {
+                // 为key 设定一个时长 单位为S
+                RedisConnection.expire(redisID, 60*60)
+                if (err) return err
+            })
             const sql = 'INSERT INTO datas (sendTime,waterLevel,TiltAngle,police,redisId) VALUES (?,?,?,?,?)'
-            const [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
-            return res
+            //异步队列
+            let addToMysql = async (sql:string)=>{
+              let [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
+              return res
+            }
+            //如果存入mysql失败 再次尝试
+            try{
+                let res =  await addToMysql(sql)
+                if (res.affectedRows!=1){
+                    addToMysql(sql)
+                    console.log(res)
+                }else {
+                    return res
+                }
+            }catch (e) {
+                return "mysql异常"+e
+            }
+
+
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getAllData(){
@@ -35,7 +64,30 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
+        }
+    }
+    //从redis拿数据 只能拿一小时以内的数据
+    async getAllDataByRedis(){
+        try {
+            let Redis_Res:any=[]
+            await RedisConnection.select(1).then((res:any)=>{
+                RedisConnection.keys('*').then(async (res_:any )=>{
+                    for (let redisId=0;redisId<res_.length;redisId++) {
+                            const result = await RedisConnection.get(res_[redisId])
+                        console.log(result)
+                            if(result === null){
+                                console.log('result:','<'+result+'>', 'This key cannot be find...')
+                            }else {
+                                console.log('Result:','<'+result+'>','Get key success!...');
+                                Redis_Res.push(result)
+                            }
+                    }
+                });
+            })
+            return Redis_Res
+        }catch (e) {
+            return e
         }
     }
     async getDataByTime(startTime:string,endTime:string){
@@ -46,7 +98,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getDataById(id:number){
@@ -57,7 +109,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getDataByWaterLevel(StartWaterLevel:number,EndWaterLevel:number){
@@ -68,7 +120,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getDataByTiltAngle(StartTiltAngle:number,EndTiltAngle:number){
@@ -79,7 +131,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getDataByPolice(police:boolean){
@@ -90,7 +142,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async delDataById(Id:number){
@@ -101,7 +153,7 @@ class DatasDao {
                 res
             };
         }catch (e){
-            console.log(e)
+            return e
         }
     }
     async getLatestData(){    //获取最新的数据

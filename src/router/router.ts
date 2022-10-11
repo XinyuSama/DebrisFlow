@@ -12,8 +12,8 @@ const Router = require('koa-router');
 // 具体的处理逻辑 增删改查
 
 const {
-    delData,
     getAllData,
+    getAllDataByRedis,
     getDataByTime,
     addData,
     getDataById,
@@ -31,6 +31,7 @@ const deportmentRouter = new Router({
 });
 
 deportmentRouter.get('/getAllData', getAllData);
+deportmentRouter.get('/getAllDataByRedis', getAllDataByRedis);
 deportmentRouter.post('/getDataByTime', getDataByTime);
 deportmentRouter.post('/getDataById', getDataById);
 deportmentRouter.post('/getDataByWaterLevel', getDataByWaterLevel);
