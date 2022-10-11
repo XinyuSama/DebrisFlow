@@ -1,5 +1,5 @@
 <template>
-  <div :id="this.id" class="main_container"></div>
+  <div :id="id" class="main_container" :option="option"></div>
 </template>
 
 <script>
@@ -11,7 +11,7 @@ export default {
   },
   props: {
     option: { // 接收父组件传入值
-      type: Object,
+      // type: Object,
     },
     id:{
       type:String
@@ -24,6 +24,7 @@ export default {
   },
   methods:{
     initCharts() {
+      console.log(this.options)
       // 初始化echarts实例
       let myChart = echarts.init(document.getElementById(this.id))
       // 绘制图表
@@ -36,8 +37,8 @@ export default {
 <style scoped>
 .main_container {
   width: 100%;
-  height: 800px;
+  height: 500px;
   /*消除margin*/
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 </style>

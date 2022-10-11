@@ -20,7 +20,8 @@ const {
     getDataByWaterLevel,
     getDataByTiltAngle,
     getDataByPolice,
-    delDataById
+    delDataById,
+    getLatestData
 } = require('../service/service.datas');
 
 // 前缀：
@@ -37,7 +38,8 @@ deportmentRouter.post('/getDataByTiltAngle', getDataByTiltAngle);
 deportmentRouter.post('/getDataByPolice', getDataByPolice);
 deportmentRouter.post('/addData', addData);
 deportmentRouter.post("/delDataById",delDataById);
+deportmentRouter.get("/getLatestData",getLatestData)
 
 
 // 导出
-module.exports = deportmentRouter;
+module.exports = deportmentRouter

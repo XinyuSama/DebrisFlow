@@ -10,15 +10,24 @@ const cors = require('koa2-cors');
 const useRoutes = require('./src/router/router');
 const views = require("koa-views")
 const bodyParser = require('koa-bodyparser')
+const webSocket = require('ws');
+
+// 引用Server类:
+// const WebSocketServer = webSocket.Server;
+//
+// // 实例化:
+// const wss = new WebSocketServer({
+//   port: 3000
+// });
+
+
 // const errorHandler = require('./configs/error-handle')
-const app = module.exports = new Koa()
+const app  = new Koa()
+
 app.use(bodyParser())
 const path = require("path")
 const { koaSwagger } = require('koa2-swagger-ui');
 const config = require("./configs/config.js")
-
-
-
 const statics = require("koa-static")
 app.use(cors());
 app.use(views(path.join(__dirname,"views/"),{extension:'html'}))

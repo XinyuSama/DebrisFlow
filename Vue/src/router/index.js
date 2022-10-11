@@ -7,31 +7,25 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    redirect:'/FiveDaysData',
+    redirect:'/tableData',
     component: () => import(/* webpackChunkName: "about" */ '../views/index.vue'),
     children:[
       {
-        path:'/FiveDaysData',
+        path:'/tableData',
+        component: () => import("../views/tableData")
       },
       {
-        path:'/UserGroup',
+        path:'/unityModel',
+        component: () => import("../views/unityModel")
       },
       {
-        path:'/UserBuyCount',
+        path:'/twoDModel',
+        component: () => import("../views/twoDModel")
       },
       {
-        path:'/UserTypeAccountedFor',
-      },
-      {
-        path:'/UserExpensePlace',
-      },
-      {
-        path:'/UserExpenseTimes',
-      },
-      {
-        path: "UserExpenseTimesAndPlace"
+        path:'/intro',
+        component: () => import("../views/intro")
       }
-
     ]
   }
 ]

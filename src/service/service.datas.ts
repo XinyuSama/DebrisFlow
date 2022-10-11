@@ -131,8 +131,21 @@ class DatasService{
             }
         }
     }
-
-
+    async getLatestData(ctx:any) {
+        try {
+            const res = await DatasDao_.getLatestData()
+            ctx.body = {
+                code : 1,
+                data: res
+            }
+        }
+        catch (e) {
+            ctx.body = {
+                code: 0,
+                data: e
+            }
+        }
+    }
 }
 
 module.exports = new DatasService();

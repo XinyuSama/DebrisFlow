@@ -2,21 +2,19 @@
   <el-container>
     <el-header style="font-size: 25px">泥石流</el-header>
     <el-container>
-      <my-aside/>
-      <MyMain/>
-
+      <LeftNavigation/>
+      <router-view/>
     </el-container>
     <el-footer>~~~~</el-footer>
   </el-container>
 </template>
 
 <script>
-import MyAside from "@/views/MyAside";
-import MyMain from "@/views/MyMain";
+import LeftNavigation from "@/views/LeftNavigation";
 export default {
   name: "index",
   components:{
-    MyAside,MyMain
+    LeftNavigation
   }
 }
 </script>

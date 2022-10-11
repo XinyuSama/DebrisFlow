@@ -104,6 +104,17 @@ class DatasDao {
             console.log(e)
         }
     }
+    async getLatestData(){    //获取最新的数据
+        try {
+            const sql = "select waterLevel,TiltAngle,police,sendTime from datas order by id desc limit 1"
+            const [res] = await MysqlConnection.execute(sql)
+            return {
+                res
+            }
+        }catch (e){
+            console.log(e);
+        }
+    }
 }
 
 module.exports = new DatasDao();

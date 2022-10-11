@@ -6,7 +6,7 @@ export function request(config) {
   const instance = axios.create({
     // 设置基础的url配置项，这样接口处的url前面就不用写url:'http://127.0.0.1:8000/api/home'，直接写成 url:'/api/home', 就可以了
     // baseURL: 'https://interface.sina.cn',
-    baseURL: 'https://echartserver.xinyu.love/api',
+    baseURL: 'http://localhost:3000/api',
     //设置请求超时时间
     timeout: 5000
   })
@@ -20,11 +20,11 @@ export function request(config) {
   // })
   //
   // // 2.2.响应拦截
-  // instance.interceptors.response.use(res => {
-  //   return res.data
-  // }, err => {
-  //       console.log('响应拦截err: '+err);
-  // })
+  instance.interceptors.response.use(res => {
+    return res.data
+  }, err => {
+        console.log('响应拦截err: '+err);
+  })
 
   // 3.发送真正的网络请求
   return instance(config)
