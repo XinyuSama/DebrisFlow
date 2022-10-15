@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | My project 926 a</title>
+  </head>
+  <body style="padding: 0;margin: 0;overflow: hidden;">
+    <canvas id="unity-canvas" style="width: 100%; height: 100vh; background: #000000;"></canvas>
+<!--    <button onclick="f()">全屏</button>-->
+<!--    <button onclick="f()" style="background-color: aqua;width: 50px;height: 50px;border-radius: 40%;text-align: center;line-height: 50px;position: absolute;top: 0">全屏</button>-->
+    <script src="Build/unity2.loader.js"></script>
+    <script>
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/unity2.data.unityweb",
+        frameworkUrl: "Build/unity2.framework.js.unityweb",
+        codeUrl: "Build/unity2.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "My project 926 a",
+        productVersion: "0.1",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      });
+      // 判断各种浏览器，找到正确的方法 进入全屏
+      function launchFullscreen (element) {
+        if (element.requestFullscreencreen) {
+          element.requestFullScreen()
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen()
+        } else if (element.webkitRequestFullScreen) {
+          element.webkitRequestFullScreen()
+        } else if (element.msRequestFullScreen) {
+          element.msRequestFullScreen()
+        }
+      }
+      // let dom_ = document.querySelector("#unity-canvas")
+      // function f() {
+      //   launchFullscreen(dom_)
+      // }
+
+    </script>
+  </body>
+</html>

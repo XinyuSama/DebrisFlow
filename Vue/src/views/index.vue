@@ -1,58 +1,61 @@
 <template>
   <el-container>
-    <el-header style="font-size: 25px">泥石流</el-header>
+    <el-header  width="auto">
+      <el-menu class="el-menu-demo" mode="horizontal"  background-color="#EBEEF5"
+               :default-active="$route.path" router>
+        <el-menu-item v-for="route in routes"
+                      :key="route.path"
+                      :index="route.path" :class="$route.path===route.path?'is-active':''">
+          <i :class="route.icon"></i>
+          <span slot="title">{{ route.title }}</span>
+        </el-menu-item>
+      </el-menu>
+      </el-header>
     <el-container>
-      <LeftNavigation/>
-      <router-view/>
+      <el-main>  <router-view/> </el-main>
     </el-container>
-    <el-footer>~~~~</el-footer>
   </el-container>
 </template>
 
 <script>
-import LeftNavigation from "@/views/LeftNavigation";
 export default {
   name: "index",
-  components:{
-    LeftNavigation
+  data() {
+    return {
+      isCollapse: false,
+      routes: [
+        {path: "/tableData", title: "表格数据",icon:'el-icon-tickets'},
+        {path: "/echartsTable", title: "图表",icon:'el-icon-pie-chart'},
+        {path: "/unityModel", title: "3D模型",icon:'el-icon-view'},
+        {path: "/twoDModel", title: "2D模型",icon:'el-icon-monitor'},
+        {path: "/intro", title: "简介",icon:'el-icon-info'},
+      ]
+
+    };
+  },
+  methods:{
+    collapseStatus(){
+      this.isCollapse = ! this.isCollapse
+    }
   }
 }
 </script>
 
 <style scoped>
-.el-header, .el-footer {
-  background-color: rgb(217,236,255);
-  color: #333;
-  text-align: center;
-  line-height: 60px;
+
+.el-menu-demo{
+  display: flex;
+  justify-content: space-around;
 }
 
-.el-aside {
-  background-color:  rgb(217,236,255);
-  color: #333;
-  /*左对齐*/
-  text-align: left;
-  line-height: 200px;
-}
-
-.el-main {
-  background-color: rgb(236, 245, 255);
-  color: #333;
-  text-align: center;
-  line-height: 160px;
-}
 
 body > .el-container {
   margin-bottom: 40px;
   height: 100vh;
-}
 
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
 }
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
+.el-main{
+  padding: 0;
+  overflow: hidden;
 }
 </style>

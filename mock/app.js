@@ -13,7 +13,7 @@ const mysql = require("mysql2")
 const Mock = require("mockjs")
 const app = new Koa();
 const times = require("./utils/times")
-
+const axios = require('axios')
 
 //读取环境变量
 dotenv.config()
@@ -33,33 +33,42 @@ console.log("mysql连接成功")
 // console.log(Boolean( ctx.request.query.name && ctx.request.query.address && ctx.request.query.phone))
 let addMessage = async ()=>{
     let MockObj = Mock.mock({
-        'waterLevel|1-100.1-10': 1,
+        'waterLevel|70-90.1-10': 1,
         'TiltAngle|50-90': 1,
-        'police|1': "@boolean",
+        'police|0-1': 1,
     })
     console.log(MockObj)
-    if(MockObj.waterLevel && MockObj.TiltAngle){
-        //fix linux系统时差 -> 东八区时间戳
-        let nowTimeTamp = times().utcOffset(8).valueOf()
-
-        // console.log(times(nowTimeTamp).format('YYYY-MM-DD HH:mm:ss'));
-        // console.log(nowTimeTamp)
-        let querySql="INSERT INTO datas (waterLevel,TiltAngle,police,sendTime) VALUES(?,?,?,?)"
-        let querySqlParameter = [`${MockObj.waterLevel}`,`${MockObj.TiltAngle}`,`${MockObj.police}`,`${nowTimeTamp}`]
-        let searchSql = (querySql) => {
-            return new Promise((resolve, reject) => {
-                connection.query(querySql,querySqlParameter, (err, result)=>{
-                    if(err){
-                        reject(0)
-                        console.log(err+'err')
-                    }
-                    resolve(result)
-                })
-            })
+    axios({
+        method: 'post',
+        url: 'http://localhost:3000/api/addData',
+        data: {
+            waterLevel: MockObj.waterLevel,
+            police: MockObj.police,
+            TiltAngle: MockObj.TiltAngle,
         }
-        let res= await searchSql(querySql)
-        console.log(res)
-    }
+    });
+    // if(MockObj.waterLevel && MockObj.TiltAngle){
+    //     //fix linux系统时差 -> 东八区时间戳
+    //     let nowTimeTamp = times().utcOffset(8).valueOf()
+    //
+    //     // console.log(times(nowTimeTamp).format('YYYY-MM-DD HH:mm:ss'));
+    //     // console.log(nowTimeTamp)
+    //     let querySql="INSERT INTO datas (waterLevel,TiltAngle,police,sendTime) VALUES(?,?,?,?)"
+    //     let querySqlParameter = [`${MockObj.waterLevel}`,`${MockObj.TiltAngle}`,`${MockObj.police}`,`${nowTimeTamp}`]
+    //     let searchSql = (querySql) => {
+    //         return new Promise((resolve, reject) => {
+    //             connection.query(querySql,querySqlParameter, (err, result)=>{
+    //                 if(err){
+    //                     reject(0)
+    //                     console.log(err+'err')
+    //                 }
+    //                 resolve(result)
+    //             })
+    //         })
+    //     }
+    //     let res= await searchSql(querySql)
+    //     console.log(res)
+    // }
 }
 
 // setInterval(addMessage,60000)

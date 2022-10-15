@@ -1,7 +1,7 @@
 import {json} from "stream/consumers";
-
 const DatasDao_ = require('../dao/dao.datas')
 const timeTampChange = require("../../utils/times")
+const axios = require('axios')
 class DatasService{
     async addData(ctx:any){
         try {
@@ -145,13 +145,57 @@ class DatasService{
             }
         }
     }
-    async getLatestData(ctx:any) {
+    async getPageData(ctx:any) {
         try {
-            const res = await DatasDao_.getLatestData()
+            // 从第几条开始 查多少条
+            let {startId,pagesDataLength}  = ctx.request.body
+            const res = await DatasDao_.getPageData(startId,pagesDataLength)
             ctx.body = {
                 code : 1,
                 data: res
             }
+        }
+        catch (e) {
+            ctx.body = {
+                code: 0,
+                data: e
+            }
+        }
+    }
+    async getLatestOneData(ctx:any) {
+        try {
+            const res = await DatasDao_.getLatestOneData()
+
+
+            ctx.body = {
+                code : 1,
+                data: res
+            }
+        }
+        catch (e) {
+            ctx.body = {
+                code: 0,
+                data: e
+            }
+        }
+    }
+    async unity(ctx:any) {
+        try {
+            let getLatestOneData =async ()=>{
+                let res = await axios({
+                    method: 'get',
+                    url: 'http://localhost:3000/api/getLatestOneData',
+                });
+                return res
+            }
+
+            let t = setInterval(async function() {
+                let res = await getLatestOneData()
+                // console.log(res.data.data)
+                let sendWs = `${res.data.data.waterLevel},${res.data.data.TiltAngle},${Boolean(res.data.data.police)}`
+                ctx.websocket.send(sendWs)
+            }, 500)
+
         }
         catch (e) {
             ctx.body = {

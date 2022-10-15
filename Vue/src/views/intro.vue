@@ -7,7 +7,7 @@ export default {
   name: "intro",
   data(){
     return{
-z
+
     }
   }
 }

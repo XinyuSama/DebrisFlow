@@ -21,7 +21,8 @@ const {
     getDataByTiltAngle,
     getDataByPolice,
     delDataById,
-    getLatestData
+    getPageData,
+    getLatestOneData
 } = require('../service/service.datas');
 
 // 前缀：
@@ -39,7 +40,8 @@ deportmentRouter.post('/getDataByTiltAngle', getDataByTiltAngle);
 deportmentRouter.post('/getDataByPolice', getDataByPolice);
 deportmentRouter.post('/addData', addData);
 deportmentRouter.post("/delDataById",delDataById);
-deportmentRouter.get("/getLatestData",getLatestData)
+deportmentRouter.post("/getPageData",getPageData)
+deportmentRouter.get("/getLatestOneData",getLatestOneData)
 
 
 // 导出

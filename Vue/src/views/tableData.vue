@@ -1,112 +1,147 @@
-<template >
-  <div class="theOuterStyle">
-    <echarts :id="id" :option="option"></echarts>
-    <button @click="ImportExcel">将数据导入到excel</button>
-    <button @click="ImportPdf">图标生成为pdf</button>
+<template>
+  <div class="main_">
+    <div class="block">
+      <el-date-picker
+          @change="pickerChange()"
+          v-model="value2"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions">
+      </el-date-picker>
+    </div>
+    <el-table
+        :data="tableData"
+        :row-class-name="tableRowClassName"
+        style="width: 100%">
+      <el-table-column
+          label="id"
+          prop="id">
+      </el-table-column>
+      <el-table-column
+          label="日期"
+          prop="sendTime">
+      </el-table-column>
+      <el-table-column
+          label="水位"
+          prop="waterLevel"
+      >
+      </el-table-column>
+      <el-table-column
+          label="倾斜角"
+          prop="TiltAngle"
+      >
+      </el-table-column>
+      <el-table-column
+          label="预警"
+          prop="police"
+      >
+        <template slot-scope="scope">
+          <div :class="[Boolean(scope.row.police)? 'red_circle':'green_circle']">
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+
+
+    <div class="pagination_">
+      <el-pagination
+           v-if="pickerShow"
+          :current-page="currentPage1"
+          :page-size="15"
+          :page-sizes="Array.from({ length: (100 - 10) / 10 + 1}, (_, i) => 10 + (i * 10))"
+          :total="AllData.length"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange">
+      </el-pagination>
+
+      <div style="margin-left: 30px">
+        <el-button type="primary" @click="ImportExcel(tableData)" v-if="pickerShow">此页导出excel</el-button>
+        <el-button type="primary" @click="ExportAllData()">全部导出excel</el-button>
+      </div>
+
+    </div>
   </div>
 </template>
 <script>
-import {axios} from "@/utils/http/network"
-import echarts from "../components/Echarts"
+import {error, message, success} from "@/utils/message";
 import moment from "moment"
 import ExportJsonExcel from "js-export-excel"
-import htmlToPdf from "@/utils/pdf"
+import {getAllData, getPageData,getDataByTime} from "@/utils/http/network";
+
 export default {
   name: "tableData",
-  components:{
-    echarts
-  },
-  data(){
+  data() {
     return{
-      id: "river",
-      option:{},
-      waterLevel :[],  //水位
-      sendTime : [],  //时间
-      slantAngle : [] , //倾斜角
-      res:""  //获取所有数据
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
+       value2: '',
+      tableData: [],
+      currentPage1: 1,
+      AllData: [],
+      page:1,
+      pagesMessageNum:10,
+      pickerShow:true
     }
   },
-  // moment(parseInt(value.endTime)).format('YYYY/MM/DD hh:mm:ss');
   methods: {
-   getAllData(){
-     axios("/getAllData","get").then((res) =>{
-        this.res = res.data.res
-       for(let i=0; i<res.data.res.length; i++){
-         this.waterLevel.push(Number(res.data.res[i].waterLevel))
-         let time =moment(parseInt(res.data.res[i].sendTime)).format('YYYY/MM/DD hh:mm:ss')
-         this.sendTime.push(time)
-         this.slantAngle.push(res.data.res[i].TiltAngle)
-       }
-       this.processingData()
-     })
-   },
-    processingData(){
-     let da = []   //da是最终数据，渲染到表
-      for(let i=0; i<this.slantAngle.length; i++){
-        da.push([this.sendTime[i],this.waterLevel[i],"水位"])
+    tableRowClassName({row, rowIndex}) {
+      if (rowIndex === 1) {
+        return 'warning-row';
+      } else if (rowIndex === 3) {
+        return 'success-row';
       }
-      console.log(da,124);
-      this.option = {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'line',
-            lineStyle: {
-              color: 'rgba(0,0,0,0.2)',
-              width: 1,
-              type: 'solid'
-            }
-          }
-        },
-        legend: {
-          data: ['水位']
-        },
-        singleAxis: {
-          top: 50,
-          bottom: 50,
-          axisTick: {},
-          axisLabel: {},
-          type: 'time',
-          axisPointer: {
-            animation: true,
-            label: {
-              show: true
-            }
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              type: 'dashed',
-              opacity: 0.2
-            }
-          }
-        },
-        series: [
-          {
-            type: 'themeRiver',
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 20,
-                shadowColor: 'rgba(0, 0, 0, 0.8)'
-              }
-            },
-            data: da,
-          }
-        ]
-      }
-      // console.log(this.option,2333);
+      return '';
     },
-    ImportExcel(){
-      const dataList = this.res
+    // 全部导出为excel
+    ExportAllData() {
+      this.AllData.forEach((i) => {
+        i.sendTime = moment(parseInt(i.sendTime)).format('YYYY-MM-DD HH:mm:ss');
+      })
+      console.log(this.AllData)
+      this.ImportExcel(this.AllData)
+    },
+    // 导出为excel
+    ImportExcel(tableData) {
       let option = {};    //代表excel文件
       let dataTbale = []   //excel文件中的数据内容
-      if(dataList){
-        for(let i in dataList){
+      if (tableData) {
+        for (let i in tableData) {
           let obj = {
-            id: dataList[i].id,    //id
-            水位: dataList[i].waterLevel,
-            倾斜角度: dataList[i].TiltAngle,
-            时间: moment(parseInt(dataList[i].sendTime)).format('YYYY/MM/DD hh:mm:ss')
+            id: tableData[i].id,    //id
+            水位: tableData[i].waterLevel,
+            倾斜角度: tableData[i].TiltAngle,
+            时间: tableData[i].sendTime,
+            预警: tableData[i].police
 
           }
           dataTbale.push(obj)
@@ -118,28 +153,134 @@ export default {
         {
           sheetData: dataTbale,     //excel文件的数据源
           sheetName: "sheet",      //excel文件sheet的表名
-          sheetHeader: ["id","水位","倾斜角度","时间"], //excel文件sheet的表头名
-          sheetFilter: ["id","水位","倾斜角度","时间"]    //文件列名
+          sheetHeader: ["id", "水位", "倾斜角度", "时间", '预警'], //excel文件sheet的表头名
+          sheetFilter: ["id", "水位", "倾斜角度", "时间", '预警']    //文件列名
         }
       ]
       let toExcel = new ExportJsonExcel(option)
       toExcel.saveExcel()
     },
-    ImportPdf(){     //“图表”为生成的pdf文件的名称
-      htmlToPdf.downloadPDF(document.querySelector("#river"),"图表")
+    //设置每页多少条数据
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`);
+      this.pagesMessageNum = val
+      this.getPageData_(this.page,val)
+    },
+    // 请求每页数据
+     handleCurrentChange(page) {
+      this.page = page
+      this.getPageData_(page,this.pagesMessageNum)
+    },
+    // 请求
+    async getPageData_(page,pagesMessageNum) {
+      try {
+        let startId = (page - 1 < 0 ? 0 : page - 1) * pagesMessageNum
+        console.log(startId,pagesMessageNum)
+        let pageData = await getPageData(startId,pagesMessageNum)
+        if (pageData.code == 1) {
+          // success("请求成功！")
+          pageData.data.res.forEach((i) => {
+            i.sendTime = moment(parseInt(i.sendTime)).format('YYYY-MM-DD HH:mm:ss');
+          })
+          this.tableData = pageData.data.res
+          this.pickerShow = true
+        } else {
+          error("请求错误！")
+        }
+        let AllData = await getAllData()
+        this.AllData = AllData.data.res
+        this.$store.state.AllData = AllData.data.res
+      }catch (e) {
+        error(e)
+      }
+
+    },
+    //日期查询
+    async pickerChange(){
+      let times =[]
+      for (let time of this.value2) {
+       times.push(moment(time).valueOf())
+      }
+      try {
+        let res = await getDataByTime(times[0],times[1])
+        if (res.code==1){
+
+          this.AllData = res.data.res
+          this.tableData = res.data.res
+          this.pickerShow =!this.pickerShow
+
+        }
+      }catch (e) {
+        error(e)
+      }
+
     }
   },
   mounted() {
-    this.getAllData()
-  }
-
+    this.getPageData_(this.page,this.pagesMessageNum)
+  },
 }
 </script>
 
 <style scoped>
-.theOuterStyle{
-  width:100%;
-  height: 100%
+.main_ {
+  height: 100%;
+  width: 100%;
+}
+
+.pagination_ {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.el-col {
+  border-radius: 4px;
+}
+
+.bg-purple-dark {
+  background: #99a9bf;
+}
+
+.bg-purple {
+  background: #d3dce6;
+}
+
+.bg-purple-light {
+  background: #e5e9f2;
+}
+
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+}
+
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
+
+.red_circle {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  background: #e34545;
+}
+
+.green_circle {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  background: #46e146;
+}
+.block{
+  display: flex;
+  justify-content: center;
+  margin: 20px 0px 20px 0px;
 }
 </style>
 

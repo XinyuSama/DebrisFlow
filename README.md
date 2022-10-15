@@ -20,15 +20,7 @@
 >
 > mysql port -> 33066
 >
-> mysql字段：
->
-> ![img.png](./img.png)
->
 > redis port -> 6379 db:1
->
-> redis key 为随机生成的唯一id
->
-> ![img_1.png](./img_1.png)
 >
 
 ## 2022-9-27-15:40
@@ -39,7 +31,7 @@
 </ol>
 
 >PS :
->* 后端三层架构：![img.png](https://img-blog.csdnimg.cn/20201101234335745.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80OTA2NjM5OQ==,size_16,color_FFFFFF,t_70#pic_center)
+>* 后端三层架构：![img.png](https://cdn.xinyusama.com//blog/202210111346254.png)
 >* dao：持久层 ->负责数据库查询增删改查操作
 >* service：业务层 -> 负责dao层上来的数据进行进一步处理
 >* routes：表现层 // 也有叫做controller层 -> 负责前端与后端交互的入口 控制路由 负责service层上来的数据
@@ -79,69 +71,23 @@
       * parameter-->Id:number 
 
 ## 2022-10-07-22:05
-1. 更改redis存储类型,设置每条数据存储时间为60s * 60 ,一小时,mysql永久存储全部数据，使用异步+redis处理有大量请求时候，先存入redis中再通过异步反复存入mysql直到成功
-   * 更改接口`addData`  
-     
-     原代码:
-     ``` js
-     async addData(waterLevel:string,TiltAngle:string,police:string) {
-        try {
-            let nowTimeTamp = times().utcOffset(8).valueOf()
-            let redisID = uuid.v1().toString()
-            await RedisConnection.sadd(redisID,[nowTimeTamp,waterLevel,TiltAngle,police])
-            const sql = 'INSERT INTO datas (sendTime,waterLevel,TiltAngle,police,redisId) VALUES (?,?,?,?,?)'
-            const [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
-            return res
-        }catch (e){
-            console.log(e)
-        }
-      }
-     ```
-     更改后的代码:
-     ```js
-         async addData(waterLevel:string,TiltAngle:string,police:string) {
-        try {
-            let nowTimeTamp = times().utcOffset(8).valueOf()
-            let redisID = uuid.v1().toString()
-            // redis存储 设置数据存储时长60s
-            let redisValue = {
-                sendTime:nowTimeTamp,
-                waterLevel:waterLevel,
-                TiltAngle:TiltAngle,
-                police:police
-            }
-            // 对象转字符串:
-            await RedisConnection.set(redisID, JSON.stringify(redisValue), (err:any) => {
-                // 为key 设定一个时长 单位为S
-                RedisConnection.expire(redisID, 60*60)
-                if (err) return err
-            })
-            const sql = 'INSERT INTO datas (sendTime,waterLevel,TiltAngle,police,redisId) VALUES (?,?,?,?,?)'
-            //异步队列
-            let addToMysql = async (sql:string)=>{
-              let [res] = await MysqlConnection.execute(sql,[nowTimeTamp,waterLevel,TiltAngle,police,redisID]);
-              return res
-            }
-            //如果存入mysql失败 再次尝试
-            try{
-                let res =  await addToMysql(sql)
-                if (res.affectedRows!=1){
-                    addToMysql(sql)
-                    console.log(res)
-                }else {
-                    return res
-                }
-            }catch (e) {
-                return "mysql异常"+e
-            }
+1. 增加接口 
 
-
-        }catch (e){
-            return e
-        }
-   }
-
-     ```
-2. 增加接口 
 * get
   * ip/api/getAllDataByRedis -> 获取所有redis里的数据（redis里数据只存在1小时，获取全部->getAllData） ✅
+
+## 2022-10-15-22:05
+
+1. 增加接口 
+
+* post
+  * ip/api/getPageData-> 分页查询 ✅
+  
+    * parameter--> startId:number(第几条id) pagesDataLength:number（要获取的数据条数）
+  
+* get
+  * ip/api/getLatestOneData-> 从redis获取最新的一条数据 ✅
+
+# 总体架构
+
+![泥石流项目架构](https://cdn.xinyusama.com//blog/202210152123600.png)
